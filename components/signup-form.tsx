@@ -63,7 +63,7 @@ export function SignupForm({
       {
         onSuccess: () => {
           toast.success('Sign up successful');
-          router.push('/dashboard');
+          router.push('/');
         },
         onError: (error) => {
           toast.error(error.error.message || 'Failed to sign up');
