@@ -14,6 +14,7 @@
     "@arcjet/next": "^1.1.0",
     "@hookform/resolvers": "^5.2.2",
     "@neondatabase/serverless": "^1.0.2",
+    "@react-email/components": "^1.0.7",
     "@zxcvbn-ts/core": "^3.0.4",
     "@zxcvbn-ts/language-common": "^3.0.4",
     "@zxcvbn-ts/language-en": "^3.0.2",
@@ -29,6 +30,7 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-hook-form": "^7.71.1",
+    "resend": "^6.9.2",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.4.0",
     "zod": "^4.3.6"

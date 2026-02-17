@@ -13,10 +13,10 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { getCurrentUser } from "@/server/user"
+import { authIsRequired } from "@/server/user"
 
 export default async function Page() {
-  await getCurrentUser()
+  await authIsRequired()
   return (
     <SidebarProvider>
       <AppSidebar />

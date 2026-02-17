@@ -73,6 +73,7 @@ export function SignupForm({
         },
       },
     );
+    setIsLoading(false);
   }
 
   return (
@@ -168,8 +169,15 @@ export function SignupForm({
               </div>
 
               <Field>
-                <Button type="submit" form="signup-form" disabled={isLoading}>
-                  {isSubmitting ? <Spinner className="size-4" /> : 'Sign up'}
+                <Button
+                  type="submit"
+                  form="signup-form"
+                  disabled={isSubmitting}
+                >
+                  {isLoading && (
+                    <Spinner className="size-4" />
+                  )}
+                  Sign up
                 </Button>
               </Field>
               <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
