@@ -6,4 +6,4 @@
 4. ทำ signUp เสร็จแล้ว ตรวจสอบ session ได้
 5. ทำ signIn เสร็จ ติดตั้ง Arcjet เพื่อป้องกันการโจมตี ทำ Rate Limit Brute Force
 6. วางแนวป้องกันก่อนเข้าถึง singUp ต่อ cloneRequest
-7. ทำ EmailVerify
+7. ทำ EmailVerify หลังจาก signUp จะแจ้งให้ verify email

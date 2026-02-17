@@ -49,14 +49,17 @@ export function LoginForm({
   async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true);
     await authClient.signIn.email(
-      { ...data, callbackURL: '/' },
+      { ...data },
       {
         onSuccess: () => {
           toast.success('Sign in successful');
           router.push('/dashboard');
         },
-        onError: (error) => {
-          toast.error(error.error.message || 'Failed to sign in');
+        onError: (ctx) => {
+          if (ctx.error.status === 403) {
+            toast.error('You do not have permission to sign in');
+          }
+          toast.error(ctx.error?.message || 'Failed to sign in');
         },
         onFinally: () => {
           setIsLoading(false);
@@ -105,7 +108,15 @@ export function LoginForm({
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="password">Password</FieldLabel>
+                    <div className="flex items-center">
+                      <FieldLabel htmlFor="password">Password</FieldLabel>
+                      <a
+                        href="#"
+                        className="ml-auto text-sm underline-offset-4 hover:underline"
+                      >
+                        Forgot your password?
+                      </a>
+                    </div>
                     <PasswordInput
                       {...field}
                       id="password"
