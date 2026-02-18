@@ -1,6 +1,8 @@
-import { SignupForm } from "@/components/signup-form"
+import { SignupForm } from "@/components/forms/signup-form"
+import { authIsNotRequired } from "@/server/user"
 
-export default function SignupPage() {
+export default async function SignupPage() {
+  await authIsNotRequired()
   return (
     <div className="bg-muted flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
       <div className="w-full max-w-sm md:max-w-4xl">

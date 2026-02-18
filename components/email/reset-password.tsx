@@ -13,13 +13,13 @@ import {
     Tailwind,
 } from '@react-email/components';
 
-interface ForgotPasswordEmailProps {
+interface ResetPasswordEmailProps {
     userEmail: string;
-    resetUrl: string;
+    url: string;
 }
 
-const ForgotPasswordEmail = (props: ForgotPasswordEmailProps) => {
-    const { userEmail, resetUrl } = props;
+const ResetPasswordEmail = (props: ResetPasswordEmailProps) => {
+    const { userEmail, url } = props;
     const companyName = "Better Auth";
 
     return (
@@ -56,7 +56,7 @@ const ForgotPasswordEmail = (props: ForgotPasswordEmailProps) => {
                         {/* Reset Button */}
                         <Section className="text-center mb-[32px]">
                             <Button
-                                href={resetUrl}
+                                href={url}
                                 className="bg-blue-600 text-white px-[32px] py-[16px] rounded-[8px] text-[16px] font-semibold no-underline box-border hover:bg-blue-700"
                             >
                                 Reset Password
@@ -69,8 +69,8 @@ const ForgotPasswordEmail = (props: ForgotPasswordEmailProps) => {
                                 If the button above doesn't work, copy and paste the following link into your browser:
                             </Text>
                             <Text className="text-[14px] text-blue-600 break-all m-0">
-                                <Link href={resetUrl} className="text-blue-600 underline">
-                                    {resetUrl}
+                                <Link href={url} className="text-blue-600 underline">
+                                    {url}
                                 </Link>
                             </Text>
                         </Section>
@@ -110,4 +110,4 @@ const ForgotPasswordEmail = (props: ForgotPasswordEmailProps) => {
     );
 };
 
-export default ForgotPasswordEmail;
+export default ResetPasswordEmail;

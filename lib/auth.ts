@@ -4,6 +4,7 @@ import { db } from '@/db/drizzle';
 import { nextCookies } from 'better-auth/next-js';
 import { Resend } from 'resend';
 import VerifyEmail from '@/components/email/verify-email';
+import ResetPasswordEmail from '@/components/email/reset-password';
 
 const resend = new Resend(process.env.RESEND_API_KEY!);
 
@@ -14,6 +15,17 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
+    sendResetPassword: async ({ user, url }, request) => {
+      await resend.emails.send({
+        from: 'onboarding@resend.dev',
+        to: user.email,
+        subject: 'Reset your password',
+        react: ResetPasswordEmail({
+          userEmail: user.email,
+          url,
+        }),
+      })
+    }
   },
   emailVerification: {
     sendVerificationEmail: async ({ user, url }, request) => {
@@ -28,6 +40,7 @@ export const auth = betterAuth({
       });
     },
     sendOnSignUp: true,
+    expiresIn: 300 //5 minutes
   },
   socialProviders: {
     github: {

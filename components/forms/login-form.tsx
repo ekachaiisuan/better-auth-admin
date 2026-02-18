@@ -19,10 +19,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
-import { PasswordInput } from './ui/password-input';
+import { PasswordInput } from '../ui/password-input';
 import { authClient } from '@/lib/auth-client';
 import { useRouter } from 'next/navigation';
-import { SocialAuthButtons } from './social-auth-button';
+import { SocialAuthButtons } from '../social-auth-button';
 
 const formSchema = z.object({
   email: z.email('รูปแบบอีเมลไม่ถูกต้อง'),
@@ -57,7 +57,7 @@ export function LoginForm({
         },
         onError: (ctx) => {
           if (ctx.error.status === 403) {
-            toast.error('You do not have permission to sign in');
+            toast.error('Please verify your email address');
           }
           toast.error(ctx.error?.message || 'Failed to sign in');
         },
@@ -111,7 +111,7 @@ export function LoginForm({
                     <div className="flex items-center">
                       <FieldLabel htmlFor="password">Password</FieldLabel>
                       <a
-                        href="#"
+                        href="/forgot-password"
                         className="ml-auto text-sm underline-offset-4 hover:underline"
                       >
                         Forgot your password?

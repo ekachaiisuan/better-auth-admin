@@ -1,4 +1,4 @@
-import { LoginForm } from "@/components/login-form"
+import { LoginForm } from "@/components/forms/login-form"
 import { authIsNotRequired } from "@/server/user"
 
 export default async function LoginPage() {

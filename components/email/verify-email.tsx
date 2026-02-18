@@ -47,31 +47,17 @@ const VerifyEmail = (props: VerifyEmailProps) => {
                 If the button doesn't work, you can copy and paste this link
                 into your browser:
                 <br />
-               {verifyUrl}
+                {verifyUrl}
               </Text>
 
               <Text className="text-[14px] text-gray-600 mb-[32px] mt-0 leading-[20px]">
-                This verification link will expire in 24 hours. If you didn't
+                This verification link will expire in 5 minutes. If you didn't
                 create an account, you can safely ignore this email.
               </Text>
             </Section>
 
             <Hr className="border-gray-200 my-[32px]" />
 
-            <Section>
-              <Text className="text-[12px] text-gray-500 mb-[8px] mt-0 m-0">
-                123 Business Street, Suite 100
-                <br />
-                City, State 12345
-              </Text>
-
-              <Text className="text-[12px] text-gray-500 mt-[8px] mb-0">
-                <a href="#" className="text-gray-500 underline">
-                  Unsubscribe
-                </a>{' '}
-                | © 2026 Your Company Name
-              </Text>
-            </Section>
           </Container>
         </Body>
       </Tailwind>

@@ -19,9 +19,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
-import { PasswordInput } from './ui/password-input';
+import { PasswordInput } from '../ui/password-input';
 import { authClient } from '@/lib/auth-client';
 import { useRouter } from 'next/navigation';
+import { VerifyEmail } from '@/components/verify-email';
 
 const formSchema = z
   .object({
@@ -52,7 +53,7 @@ export function SignupForm({
   });
 
   const [isLoading, setIsLoading] = React.useState(false);
-  const [isEmail, setIsEmail] = React.useState(false);
+  const [isEmail, setIsEmail] = React.useState("");
   const { isSubmitting } = form.formState;
 
   const router = useRouter();
@@ -64,7 +65,7 @@ export function SignupForm({
       {
         onSuccess: () => {
           toast.success('Sign up successful');
-          setIsEmail(true);
+          setIsEmail(data.email);
         },
         onError: (error) => {
           toast.error(error.error.message || 'Failed to sign up');
@@ -80,12 +81,7 @@ export function SignupForm({
   return (
     <div className={cn('flex flex-col gap-6', className)} {...props}>
       {isEmail ? (
-        <div className="flex flex-col items-center gap-2 text-center">
-          <h1 className="text-2xl font-bold">Verify your email address</h1>
-          <p className="text-muted-foreground text-sm text-balance">
-            Check your email for a verification link
-          </p>
-        </div>
+        <VerifyEmail email={isEmail} />
       ) : (
         <Card className="overflow-hidden p-0">
           <CardContent className="grid p-0 md:grid-cols-2">
