@@ -5,6 +5,8 @@ import { nextCookies } from 'better-auth/next-js';
 import { Resend } from 'resend';
 import VerifyEmail from '@/components/email/verify-email';
 import ResetPasswordEmail from '@/components/email/reset-password';
+import { createAuthMiddleware } from 'better-auth/api';
+import WelcomeEmail from '@/components/email/welcome-email';
 
 const resend = new Resend(process.env.RESEND_API_KEY!);
 
@@ -53,6 +55,26 @@ export const auth = betterAuth({
       enabled: true,
       maxAge: 60 * 5, //5 minutes
     },
+  },
+  hooks: {
+    after: createAuthMiddleware(async ctx => {
+      if (ctx.path.startsWith("/signup")) {
+        const user = ctx.context.newSession?.user ?? {
+          name: ctx.body.name,
+          email: ctx.body.email,
+        }
+        if (user !== null) {
+          await resend.emails.send({
+            from: 'onboarding@resend.dev',
+            to: user.email,
+            subject: 'Welcome to our platform',
+            react: WelcomeEmail({
+              firstName: user.name,
+            }),
+          });
+        }
+      }
+    })
   },
   plugins: [nextCookies()],
 });
