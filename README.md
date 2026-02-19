@@ -8,3 +8,7 @@
 6. วางแนวป้องกันก่อนเข้าถึง singUp ต่อ cloneRequest
 7. ทำ EmailVerify หลังจาก signUp จะแจ้งให้ verify email พร้อมตัวจับเวลา
 8. ทำ Forgot Password และ Reset Password
+9. Profile
+    1. session management
+    2. change password
+    3. set password

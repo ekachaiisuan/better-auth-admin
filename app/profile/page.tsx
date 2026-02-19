@@ -13,10 +13,33 @@ import {
     SidebarProvider,
     SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { authIsRequired } from "@/server/user"
+import { authSession } from "@/server/user"
+import { SessionManagement } from "./_components/session-management"
+import { redirect } from "next/navigation"
+import { auth } from "@/lib/auth"
+import { headers } from "next/headers"
+import { SetPasswordButton } from "./_components/set-password-button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { ChangePasswordForm } from "./_components/change-password-form"
 
 export default async function Page() {
-    await authIsRequired()
+    const session = await authSession()
+    if (session == null) {
+        return redirect("/login")
+    }
+
+    const isHeaders = await headers()
+
+    const sessions = await auth.api.listSessions({
+        headers: isHeaders
+    })
+
+    const accounts = await auth.api.listUserAccounts({
+        headers: isHeaders
+    })
+
+    const hasPasswordAccount = accounts.some(a => a.providerId === "credential")
+
     return (
         <SidebarProvider>
             <AppSidebar />
@@ -49,9 +72,38 @@ export default async function Page() {
                     </div>
 
                     <div className="bg-muted/50  flex-1 rounded-xl md:min-h-min" >
-                        Security
+                        <div>
+                            {hasPasswordAccount ? (
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle>Change Password</CardTitle>
+                                    </CardHeader>
+                                    <CardDescription>
+                                        Update your password for improve security
+                                    </CardDescription>
+                                    <CardContent>
+                                        <ChangePasswordForm />
+                                    </CardContent>
+                                </Card>
+                            ) : (
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle>Set Password</CardTitle>
+                                    </CardHeader>
+                                    <CardDescription>
+                                        We will send you an email to set your password
+                                    </CardDescription>
+                                    <CardContent>
+                                        <SetPasswordButton email={session.user.email} />
+                                    </CardContent>
+                                </Card>
+                            )}
+                        </div>
+
                     </div>
-                    <div className="bg-muted/50  flex-1 rounded-xl md:min-h-min" />
+                    <div className="bg-muted/50  flex-1 rounded-xl md:min-h-min" >
+                        <SessionManagement sessions={sessions} currentSessionToken={session.session.token} />
+                    </div>
                     <div className="bg-muted/50  flex-1 rounded-xl md:min-h-min" />
                 </div>
             </SidebarInset>
