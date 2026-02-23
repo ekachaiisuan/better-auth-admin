@@ -7,6 +7,7 @@ import VerifyEmail from '@/components/email/verify-email';
 import ResetPasswordEmail from '@/components/email/reset-password';
 import { createAuthMiddleware } from 'better-auth/api';
 import WelcomeEmail from '@/components/email/welcome-email';
+import { twoFactor } from 'better-auth/plugins/two-factor';
 
 const resend = new Resend(process.env.RESEND_API_KEY!);
 
@@ -76,5 +77,5 @@ export const auth = betterAuth({
       }
     })
   },
-  plugins: [nextCookies()],
+  plugins: [nextCookies(), twoFactor()],
 });

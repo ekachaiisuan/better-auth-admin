@@ -21,6 +21,7 @@ import { headers } from "next/headers"
 import { SetPasswordButton } from "./_components/set-password-button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChangePasswordForm } from "./_components/change-password-form"
+import { AccountLinking } from "./_components/account-linking"
 
 export default async function Page() {
     const session = await authSession()
@@ -39,6 +40,8 @@ export default async function Page() {
     })
 
     const hasPasswordAccount = accounts.some(a => a.providerId === "credential")
+
+    const nonCredentialAccounts = accounts.filter(a => a.providerId !== "credential")
 
     return (
         <SidebarProvider>
@@ -74,17 +77,7 @@ export default async function Page() {
                     <div className="bg-muted/50  flex-1 rounded-xl md:min-h-min" >
                         <div>
                             {hasPasswordAccount ? (
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle>Change Password</CardTitle>
-                                    </CardHeader>
-                                    <CardDescription>
-                                        Update your password for improve security
-                                    </CardDescription>
-                                    <CardContent>
-                                        <ChangePasswordForm />
-                                    </CardContent>
-                                </Card>
+                                <ChangePasswordForm />
                             ) : (
                                 <Card>
                                     <CardHeader>
@@ -104,7 +97,9 @@ export default async function Page() {
                     <div className="bg-muted/50  flex-1 rounded-xl md:min-h-min" >
                         <SessionManagement sessions={sessions} currentSessionToken={session.session.token} />
                     </div>
-                    <div className="bg-muted/50  flex-1 rounded-xl md:min-h-min" />
+                    <div className="bg-muted/50  flex-1 rounded-xl md:min-h-min">
+                        <AccountLinking currentAccounts={nonCredentialAccounts} />
+                    </div>
                 </div>
             </SidebarInset>
         </SidebarProvider>

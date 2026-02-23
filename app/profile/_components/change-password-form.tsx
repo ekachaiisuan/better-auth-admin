@@ -29,10 +29,7 @@ const changePasswordSchema = z.object({
     currentPassword: z.string().min(1),
     newPassword: z.string().min(6),
     revokeOtherSessions: z.boolean(),
-}).refine((data) => data.newPassword === data.currentPassword, {
-    message: 'รหัสผ่านไม่ตรงกัน',
-    path: ['newPassword'],
-});
+})
 
 export function ChangePasswordForm({
     className,
@@ -76,13 +73,13 @@ export function ChangePasswordForm({
                 </CardHeader>
                 <CardContent>
                     <form id="change-password-form" onSubmit={form.handleSubmit(onSubmit)}>
-                        <FieldGroup>
+                        <FieldGroup className="max-w-sm">
                             <Controller
                                 name="currentPassword"
                                 control={form.control}
                                 render={({ field, fieldState }) => (
                                     <Field data-invalid={fieldState.invalid}>
-                                        <FieldLabel htmlFor="password">Password</FieldLabel>
+                                        <FieldLabel htmlFor="password">Current Password</FieldLabel>
                                         <PasswordInput
                                             {...field}
                                             id="password"
@@ -116,15 +113,17 @@ export function ChangePasswordForm({
                                 control={form.control}
                                 render={({ field, fieldState }) => (
 
-                                    <Field data-invalid={fieldState.invalid}>
-                                        <FieldLabel htmlFor="revokeOtherSessions">
-                                            Logout Other Sessions
-                                        </FieldLabel>
+                                    <Field data-invalid={fieldState.invalid} orientation="horizontal">
+
                                         <Checkbox
+                                            id="revokeOtherSessions"
                                             checked={field.value}
                                             onCheckedChange={field.onChange}
                                             aria-invalid={fieldState.invalid}
                                         />
+                                        <FieldLabel htmlFor="revokeOtherSessions">
+                                            Logout Other Sessions
+                                        </FieldLabel>
                                         {fieldState.invalid && (
                                             <FieldError errors={[fieldState.error]} />
                                         )}
