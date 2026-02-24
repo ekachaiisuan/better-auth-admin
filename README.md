@@ -13,4 +13,4 @@
     2. change password
     3. set password
     4. linked account
-    กำลังจะทำ 2FA
+    กำลังจะทำ 2FA ถึงขั้นตอน gen qrcode

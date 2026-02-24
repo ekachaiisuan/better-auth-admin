@@ -22,6 +22,7 @@ import { SetPasswordButton } from "./_components/set-password-button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChangePasswordForm } from "./_components/change-password-form"
 import { AccountLinking } from "./_components/account-linking"
+import { TwoFactorAuth } from "./_components/two-factor-auth"
 
 export default async function Page() {
     const session = await authSession()
@@ -74,8 +75,8 @@ export default async function Page() {
                         Profile
                     </div>
 
-                    <div className="bg-muted/50  flex-1 rounded-xl md:min-h-min" >
-                        <div>
+                    <div className="bg-muted/50  flex-1 rounded-xl md:min-h-min space-y-4" >
+                        <div id="password-section">
                             {hasPasswordAccount ? (
                                 <ChangePasswordForm />
                             ) : (
@@ -92,6 +93,13 @@ export default async function Page() {
                                 </Card>
                             )}
                         </div>
+                        <div id="two-factor-auth-section">
+                            {
+                                hasPasswordAccount && (
+                                    <TwoFactorAuth isTwoFAEnabled={session.user.twoFactorEnabled ?? false} />
+                                )
+                            }
+                        </div>
 
                     </div>
                     <div className="bg-muted/50  flex-1 rounded-xl md:min-h-min" >
@@ -100,6 +108,7 @@ export default async function Page() {
                     <div className="bg-muted/50  flex-1 rounded-xl md:min-h-min">
                         <AccountLinking currentAccounts={nonCredentialAccounts} />
                     </div>
+
                 </div>
             </SidebarInset>
         </SidebarProvider>

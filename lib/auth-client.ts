@@ -1,5 +1,9 @@
 import { createAuthClient } from "better-auth/react"
-import { twoFactor } from "better-auth/plugins/two-factor"
+import { twoFactorClient } from "better-auth/client/plugins"
 export const authClient = createAuthClient({
-    plugins: [twoFactor()],
+    plugins: [twoFactorClient({
+        onTwoFactorRedirect() {
+            window.location.href = "/2fa"
+        },
+    })],
 })
