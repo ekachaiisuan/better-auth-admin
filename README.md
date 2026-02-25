@@ -13,4 +13,5 @@
     2. change password
     3. set password
     4. linked account
-    กำลังจะทำ 2FA ถึงขั้นตอน gen qrcode
+    5. 2FA สามารถเปิดปิดได้ ถ้าเปิดใช้จะเพิ่ม passkey เข้าใน browser แล้วขอรับรหัสจากระบบ เข้าใช้งานได้ 2 วีธีคือผ่าน code หรือ backupcode
+    6. เตรียมเปิดใช้ Admin

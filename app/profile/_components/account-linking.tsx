@@ -12,6 +12,7 @@ import {
 } from "@/lib/o-auth-providers"
 import { Plus, Shield, Trash2 } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { formatDate } from "@/server/util"
 
 type Account = Awaited<ReturnType<typeof auth.api.listUserAccounts>>[number]
 
@@ -113,7 +114,7 @@ function AccountCard({
                                 </p>
                             ) : (
                                 <p className="text-sm text-muted-foreground">
-                                    Linked on {new Date(account.createdAt).toLocaleDateString()}
+                                    Linked on {formatDate(account.createdAt)}
                                 </p>
                             )}
                         </div>

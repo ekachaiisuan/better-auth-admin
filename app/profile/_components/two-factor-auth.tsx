@@ -26,6 +26,8 @@ import { authClient } from "@/lib/auth-client"
 import { useRouter } from "next/navigation"
 import QRCode from "react-qr-code"
 import { Input } from "@/components/ui/input"
+import { Badge } from "@/components/ui/badge"
+
 
 
 const twoFactorAuthSchema = z.object({
@@ -106,7 +108,14 @@ export function TwoFactorAuth({
         <div className={cn("flex flex-col gap-4", className)} {...props}>
             <Card>
                 <CardHeader>
-                    <CardTitle>Two Factor Authentication</CardTitle>
+                    <CardTitle className="flex justify-between">
+                        Two Factor Authentication
+                        {isEnabled ? (
+                            <Badge variant="secondary">Enabled</Badge>
+                        ) : (
+                            <Badge variant="destructive">Disabled</Badge>
+                        )}
+                    </CardTitle>
                     <CardDescription>
                         Enter your password to enable or disable two factor authentication
                     </CardDescription>
@@ -131,15 +140,13 @@ export function TwoFactorAuth({
                                     </Field>
                                 )}
                             ></Controller>
-
-
                             <Field>
                                 <Button type="submit"
                                     form="twoFa-Form"
                                     variant={isEnabled ? "destructive" : "default"}
                                     disabled={isSubmitting}
                                 >
-                                    {isEnabled ? "Disable 2FA" : "Enable 2FA"}
+                                    {isSubmitting ? <Spinner className="size-4" /> : isEnabled ? "Disable 2FA" : "Enable 2FA"}
                                 </Button>
                             </Field>
                         </FieldGroup>
@@ -209,7 +216,7 @@ function QRCodeVerify({
     }
 
     return (
-        <div id="twoFa-Qr-Form" className="space-y-4">
+        <div className="space-y-4">
             <p className="text-muted-foreground">
                 Scan this QR code with your authenticator app and enter the code below:
             </p>

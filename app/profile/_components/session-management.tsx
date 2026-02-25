@@ -8,6 +8,8 @@ import { Session } from "better-auth"
 import { Monitor, Smartphone, Trash2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { UAParser } from "ua-parser-js"
+import { formatDate } from "@/server/util"
+
 
 export function SessionManagement({
     sessions,
@@ -89,12 +91,7 @@ function SessionCard({
         return `${userAgentInfo.browser.name}, ${userAgentInfo.os.name}`
     }
 
-    function formatDate(date: Date) {
-        return new Intl.DateTimeFormat(undefined, {
-            dateStyle: "medium",
-            timeStyle: "short",
-        }).format(new Date(date))
-    }
+
 
     function revokeSession() {
         return authClient.revokeSession(
