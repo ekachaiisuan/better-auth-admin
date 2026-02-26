@@ -77,5 +77,7 @@ export const auth = betterAuth({
       }
     })
   },
-  plugins: [nextCookies(), twoFactor(), admin()],
+  plugins: [nextCookies(), twoFactor(), admin({
+    defaultRole: 'user',
+  })],
 });

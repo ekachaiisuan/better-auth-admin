@@ -15,8 +15,11 @@ import {
 } from "@/components/ui/sidebar"
 import { authIsRequired } from "@/server/user"
 
+
 export default async function Page() {
-  await authIsRequired()
+  const session = await authIsRequired()
+  
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -37,7 +40,7 @@ export default async function Page() {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Admin Dashboard</BreadcrumbPage>
+                  <BreadcrumbPage>Dashboard</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
