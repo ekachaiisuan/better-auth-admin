@@ -7,13 +7,17 @@ import VerifyEmail from '@/components/email/verify-email';
 import ResetPasswordEmail from '@/components/email/reset-password';
 import { createAuthMiddleware } from 'better-auth/api';
 import WelcomeEmail from '@/components/email/welcome-email';
-import { twoFactor, admin } from 'better-auth/plugins';
+import { twoFactor, admin as adminPlugin } from 'better-auth/plugins';
+import { ac, admin, user } from "@/lib/permissions"
+import * as schema from "@/db/schema"
+
 
 const resend = new Resend(process.env.RESEND_API_KEY!);
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: 'pg',
+    schema
   }),
   emailAndPassword: {
     enabled: true,
@@ -77,7 +81,12 @@ export const auth = betterAuth({
       }
     })
   },
-  plugins: [nextCookies(), twoFactor(), admin({
+  plugins: [nextCookies(), twoFactor(), adminPlugin({
     defaultRole: 'user',
+    ac,
+    roles: {
+      user,
+      admin,
+    },
   })],
 });

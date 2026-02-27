@@ -55,7 +55,7 @@ const data = {
   ],
   navMain: [
     {
-      title: 'Admin Management',
+      title: 'Users',
       url: '/admin',
       icon: Bot,
     },

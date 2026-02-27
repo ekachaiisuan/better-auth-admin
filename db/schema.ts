@@ -122,10 +122,3 @@ export const twoFactorRelations = relations(twoFactor, ({ one }) => ({
   }),
 }));
 
-export const schema = {
-  user,
-  session,
-  account,
-  verification,
-  twoFactor,
-};
