@@ -26,6 +26,11 @@ import { UserWithRole } from "better-auth/plugins/admin"
 import { MoreHorizontal } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
+import type { Role } from "@/lib/permissions"
+import { RoleSelect } from "./role-select"
+import { useState } from "react"
+
+
 
 export function UserRow({
   user,
@@ -37,6 +42,7 @@ export function UserRow({
   const { refetch } = authClient.useSession()
   const router = useRouter()
   const isSelf = user.id === selfId
+  const [loading, setLoading] = useState(false)
 
   function handleImpersonateUser(userId: string) {
     authClient.admin.impersonateUser(
@@ -112,6 +118,23 @@ export function UserRow({
     )
   }
 
+  async function handleChangeRole(userId: string, role: Role) {
+    setLoading(true)
+    const { error } = await authClient.admin.setRole({
+      userId,
+      role,
+    })
+    setLoading(false)
+
+    if (error) {
+      toast.error(error.message || "Failed to update role")
+      return
+    }
+
+    toast.success("Role updated")
+    router.refresh()
+  }
+
   return (
     <TableRow key={user.id}>
       <TableCell>
@@ -126,9 +149,11 @@ export function UserRow({
         </div>
       </TableCell>
       <TableCell>
-        <Badge variant={user.role === "admin" ? "default" : "secondary"}>
-          {user.role}
-        </Badge>
+        <RoleSelect
+          value={user.role as Role}
+          disabled={isSelf || loading}
+          onChange={(role) => handleChangeRole(user.id, role)}
+        />
       </TableCell>
       <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
       <TableCell>

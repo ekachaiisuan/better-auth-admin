@@ -15,3 +15,5 @@
     4. linked account
     5. 2FA สามารถเปิดปิดได้ ถ้าเปิดใช้จะเพิ่ม passkey เข้าใน browser แล้วขอรับรหัสจากระบบ เข้าใช้งานได้ 2 วีธีคือผ่าน code หรือ backupcode
     6. เปิดใช้ Admin เริ่มกระบวนการ permission
+    7. ใช้งาน userlist ได้
+    8. ใช้งาน select Role ได้

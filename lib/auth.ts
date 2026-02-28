@@ -8,7 +8,7 @@ import ResetPasswordEmail from '@/components/email/reset-password';
 import { createAuthMiddleware } from 'better-auth/api';
 import WelcomeEmail from '@/components/email/welcome-email';
 import { twoFactor, admin as adminPlugin } from 'better-auth/plugins';
-import { ac, admin, user } from "@/lib/permissions"
+import { ac, admin, user, officer, manager } from "@/lib/permissions"
 import * as schema from "@/db/schema"
 
 
@@ -87,6 +87,8 @@ export const auth = betterAuth({
     roles: {
       user,
       admin,
+      officer,
+      manager,
     },
   })],
 });

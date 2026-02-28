@@ -55,14 +55,10 @@ export default async function Admin() {
     headers: isHeders,
     query: {
       limit: 100,
-      sortBy: 'created_at',
+      sortBy: 'name',
       sortDirection: 'desc',
     },
   });
-
-  console.log(users);
-
-
 
   return (
     <SidebarProvider>
