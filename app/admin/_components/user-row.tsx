@@ -29,6 +29,7 @@ import { toast } from "sonner"
 import type { Role } from "@/lib/permissions"
 import { RoleSelect } from "./role-select"
 import { useState } from "react"
+import { formatDate } from "@/server/util"
 
 
 
@@ -155,7 +156,7 @@ export function UserRow({
           onChange={(role) => handleChangeRole(user.id, role)}
         />
       </TableCell>
-      <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
+      <TableCell>{formatDate(user.createdAt)}</TableCell>
       <TableCell>
         {!isSelf && (
           <AlertDialog>

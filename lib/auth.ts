@@ -9,7 +9,7 @@ import { createAuthMiddleware } from 'better-auth/api';
 import WelcomeEmail from '@/components/email/welcome-email';
 import { twoFactor, admin as adminPlugin } from 'better-auth/plugins';
 import { ac, admin, user, officer, manager } from "@/lib/permissions"
-import * as schema from "@/db/schema"
+import * as authSchema from "@/db/schema/auth"
 
 
 const resend = new Resend(process.env.RESEND_API_KEY!);
@@ -17,7 +17,7 @@ const resend = new Resend(process.env.RESEND_API_KEY!);
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: 'pg',
-    schema
+    schema: authSchema
   }),
   emailAndPassword: {
     enabled: true,
