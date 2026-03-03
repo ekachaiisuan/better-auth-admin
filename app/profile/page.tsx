@@ -23,6 +23,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ChangePasswordForm } from "./_components/change-password-form"
 import { AccountLinking } from "./_components/account-linking"
 import { TwoFactorAuth } from "./_components/two-factor-auth"
+import Profile from "./_components/profile"
 
 export default async function Page() {
     const session = await authSession()
@@ -72,7 +73,7 @@ export default async function Page() {
                 </header>
                 <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
                     <div className="bg-muted/50  flex-1 rounded-xl md:min-h-min" >
-                        Profile
+                        <Profile />
                     </div>
 
                     <div className="bg-muted/50  flex-1 rounded-xl md:min-h-min space-y-4" >
