@@ -3,15 +3,10 @@
 import * as React from 'react';
 import {
   AudioWaveform,
-  BookOpen,
   Bot,
   Command,
-  Frame,
   GalleryVerticalEnd,
-  Map,
-  PieChart,
-  Settings2,
-  SquareTerminal,
+  LayoutDashboard
 } from 'lucide-react';
 
 import { NavMain } from '@/components/nav-main';
@@ -28,13 +23,15 @@ import {
 import { useEffect, useState } from 'react';
 import { authClient } from '@/lib/auth-client';
 import { Spinner } from './ui/spinner';
+import { usePathname } from 'next/navigation';
+import { is } from 'drizzle-orm';
 
 // This is sample data.
 const data = {
   user: {
-    name: 'shadcn',
-    email: 'm@example.com',
-    avatar: '/avatars/shadcn.jpg',
+    name: '',
+    email: '',
+    avatar: '',
   },
   teams: [
     {
@@ -62,19 +59,9 @@ const data = {
   ],
   projects: [
     {
-      name: 'Design Engineering',
-      url: '#',
-      icon: Frame,
-    },
-    {
-      name: 'Sales & Marketing',
-      url: '#',
-      icon: PieChart,
-    },
-    {
-      name: 'Travel',
-      url: '#',
-      icon: Map,
+      name: 'Dashboard',
+      url: '/dashboard',
+      icon: LayoutDashboard,
     },
   ],
 };
@@ -82,6 +69,7 @@ const data = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [hasAdminPermission, setHasAdminPermission] = useState(false);
   const { data: session, isPending: loading } = authClient.useSession();
+ 
 
   useEffect(() => {
     if (!session) return;
@@ -95,8 +83,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   }, [session]);
 
   if (loading) {
-    return <div><Spinner className="size-4" /></div>;
+    return (
+      <div>
+        <Spinner className="size-4" />
+      </div>
+    );
   }
+
+  const user = {
+    name: session?.user?.name ?? '',
+    email: session?.user?.email ?? '',
+    avatar: session?.user?.image ?? '/avatars/default.jpg',
+  };
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -108,7 +106,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={user} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
