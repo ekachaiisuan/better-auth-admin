@@ -1,4 +1,4 @@
-import { AppSidebar } from "@/components/app-sidebar"
+import { AppSidebar } from "@/components/app-sidebar";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -6,19 +6,25 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { Separator } from "@/components/ui/separator"
+} from "@/components/ui/breadcrumb";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-} from "@/components/ui/sidebar"
-import { authIsRequired } from "@/server/user"
-
+} from "@/components/ui/sidebar";
+import { useBoards } from "@/lib/hooks/useBoards";
+import { authIsRequired } from "@/server/user";
+import { Plus } from "lucide-react";
 
 export default async function Page() {
-  const session = await authIsRequired()
-  
+  const session = await authIsRequired();
+  const {createBoard} = useBoards();
+
+  const handleCreateBoard = async () => {
+    // code
+  };
 
   return (
     <SidebarProvider>
@@ -34,9 +40,7 @@ export default async function Page() {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">
-                    Trello
-                  </BreadcrumbLink>
+                  <BreadcrumbLink href="#">Trello</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
@@ -47,9 +51,12 @@ export default async function Page() {
           </div>
         </header>
         <div className="min-h-screen bg-gray-50">
-       
+          <Button className="w-full sm:w-auto" onClick={handleCreateBoard}>
+            <Plus className="h-4 w-4 mr-2" />
+            Create Board
+            </Button>
         </div>
       </SidebarInset>
     </SidebarProvider>
-  )
+  );
 }
