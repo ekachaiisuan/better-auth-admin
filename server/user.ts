@@ -25,3 +25,13 @@ export const authIsRequired = async () => {
   return session;
 
 };
+
+export const getCurrentUserId = async () => {
+  const session = await authIsRequired();
+
+  if (!session.user?.id) {
+    redirect("/login");
+  }
+
+  return session.user.id;
+};

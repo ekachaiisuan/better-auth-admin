@@ -7,25 +7,20 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Button } from "@/components/ui/button";
+
 import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { useBoards } from "@/lib/hooks/useBoards";
 import { authIsRequired } from "@/server/user";
-import { Plus } from "lucide-react";
+import CreateDashboard from "./_components/create-dashboard";
+
 
 export default async function Page() {
   const session = await authIsRequired();
-  const {createBoard} = useBoards();
-
-  const handleCreateBoard = async () => {
-    // code
-  };
-
+ 
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -50,12 +45,7 @@ export default async function Page() {
             </Breadcrumb>
           </div>
         </header>
-        <div className="min-h-screen bg-gray-50">
-          <Button className="w-full sm:w-auto" onClick={handleCreateBoard}>
-            <Plus className="h-4 w-4 mr-2" />
-            Create Board
-            </Button>
-        </div>
+        <CreateDashboard />
       </SidebarInset>
     </SidebarProvider>
   );

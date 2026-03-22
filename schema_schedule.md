@@ -12,6 +12,7 @@ createdAt timestamp
 boardId text fk ref(boards.id) onDelete: "cascade"
 title text
 sortOrder int default 0
+userId text fk ref(user.id)
 
 tasks
 id text pk uuid
