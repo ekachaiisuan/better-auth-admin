@@ -23,8 +23,7 @@ import {
 import { useEffect, useState } from 'react';
 import { authClient } from '@/lib/auth-client';
 import { Spinner } from './ui/spinner';
-import { usePathname } from 'next/navigation';
-import { is } from 'drizzle-orm';
+
 
 // This is sample data.
 const data = {

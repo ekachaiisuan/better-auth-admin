@@ -1,20 +1,7 @@
-'use client';
+"use client";
 
-import {
-  Folder,
-  Forward,
-  MoreHorizontal,
-  Trash2,
-  type LucideIcon,
-} from 'lucide-react';
+import { type LucideIcon } from "lucide-react";
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -23,8 +10,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from '@/components/ui/sidebar';
-import { usePathname } from 'next/navigation';
+} from "@/components/ui/sidebar";
+import { usePathname } from "next/navigation";
 
 export function NavProjects({
   projects,
@@ -43,11 +30,15 @@ export function NavProjects({
       <SidebarGroupLabel>Main</SidebarGroupLabel>
       <SidebarMenu>
         {projects.map((item) => {
-          const isActive = pathname === item.url || pathname.startsWith(`${item.url}/`);
+          const isActive =
+            pathname === item.url || pathname.startsWith(`${item.url}/`);
           return (
             <SidebarMenuItem key={item.name}>
               <SidebarMenuButton asChild>
-                <a href={item.url} className={isActive ? 'bg-blue-100 rounded-2xl' : ''}>
+                <a
+                  href={item.url}
+                  className={isActive ? "bg-blue-100 rounded-2xl" : ""}
+                >
                   <item.icon />
                   <span>{item.name}</span>
                 </a>
