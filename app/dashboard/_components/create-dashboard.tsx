@@ -187,7 +187,7 @@ export default function CreateDashboard() {
           ) : viewMode === 'grid' ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
               {boards.map((board,key) => (
-                <Link key={key} href={`/dashboard/${board.id}`}>
+                <Link key={key} href={`/boards/${board.id}`}>
                   <Card className="้hover:shadow-lg transition-shadow cursor-pointer group">
                     <CardHeader>
                       <div className="flex items-center justify-between">
@@ -223,7 +223,7 @@ export default function CreateDashboard() {
             <div>
               {boards.map((board,key) => (
                 <div key={key} className={key > 0 ? 'mt-4' : ''}>
-                <Link  href={`/dashboard/${board.id}`}>
+                <Link  href={`/boards/${board.id}`}>
                   <Card className="้hover:shadow-lg transition-shadow cursor-pointer group">
                     <CardHeader>
                       <div className="flex items-center justify-between">

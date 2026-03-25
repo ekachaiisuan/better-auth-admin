@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { type Board } from '@/db/schema';
+import { type Board, type Column } from "@/db/schema";
 import {
   createBoardAction,
+  getBoardWithColumnsAction,
   getBoardsAction,
-} from '@/server/action-schedule/board';
-import { useEffect, useState } from 'react';
-import { authClient } from '@/lib/auth-client';
-import { tr } from 'zod/v4/locales';
+} from "@/server/action-schedule/board";
+import { useEffect, useEffectEvent, useState } from "react";
+import { authClient } from "@/lib/auth-client";
 
 export function useBoards() {
   const [boards, setBoards] = useState<Board[]>([]);
@@ -15,13 +15,8 @@ export function useBoards() {
   const [error, setError] = useState<string | null>(null);
   const { data: session } = authClient.useSession();
 
-  useEffect(() => {
-    if (session) {
-      loadBoards();
-    }
-  }, [session]);
-
-  async function loadBoards() {
+  const loadBoards = useEffectEvent(async () => {
+    if (!session) return;
     try {
       setLoading(true);
       setError(null);
@@ -29,12 +24,19 @@ export function useBoards() {
       setBoards(data);
     } catch (error) {
       setError(
-        error instanceof Error ? error.message : 'Failed to load boards',
+        error instanceof Error ? error.message : "Failed to load boards",
       );
     } finally {
       setLoading(false);
     }
-  }
+  });
+
+  useEffect(() => {
+    if (session) {
+      loadBoards();
+    }
+  }, [session]);
+
   async function createBoard(boardData: {
     title: string;
     description?: string;
@@ -45,10 +47,59 @@ export function useBoards() {
       setBoards((prev) => [newBoard, ...prev]);
     } catch (error) {
       setError(
-        error instanceof Error ? error.message : 'Failed to create board',
+        error instanceof Error ? error.message : "Failed to create board",
       );
     }
   }
 
   return { boards, loading, error, createBoard };
+}
+
+export function useBoard(boardId: string) {
+  const [board, setBoard] = useState<Board | null>(null);
+  const [columns, setColumns] = useState<Column[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const loadBoard = useEffectEvent(async () => {
+    if (!boardId) return;
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await getBoardWithColumnsAction(boardId);
+      setBoard(data.board);
+      setColumns(data.columns);
+    } catch (error) {
+      setError(
+        error instanceof Error ? error.message : "Failed to load boards",
+      );
+    } finally {
+      setLoading(false);
+    }
+  });
+
+    const updateBoard = useEffectEvent(async () => {
+    if (!boardId) return;
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await getBoardWithColumnsAction(boardId);
+      setBoard(data.board);
+      setColumns(data.columns);
+    } catch (error) {
+      setError(
+        error instanceof Error ? error.message : "Failed to load boards",
+      );
+    } finally {
+      setLoading(false);
+    }
+  });
+
+  useEffect(() => {
+    if (boardId) {
+      loadBoard();
+    }
+  }, [boardId]);
+
+  return { board, columns, loading, error };
 }
