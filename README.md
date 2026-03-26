@@ -17,3 +17,4 @@
     6. เปิดใช้ Admin เริ่มกระบวนการ permission
     7. ใช้งาน userlist ได้
     8. ใช้งาน select Role ได้
+10. ติดปัญหาตอนเรียก createDashboard import server drizzle.ts,action-schedule/board.ts,schedule.ts ไม่ได้

@@ -1,5 +1,3 @@
-import "server-only";
-
 import { asc, eq } from "drizzle-orm";
 
 import { db } from "@/db/drizzle";
@@ -40,6 +38,19 @@ export const boardService = {
     } catch (error) {
       console.error("Error creating board:", error);
       throw new Error("Failed to create board");
+    }
+  },
+
+    async updateBoard(
+    boardId: string,
+    updates: Partial<Board>,
+  ): Promise<Board> {
+    try {
+      const [newBoard] = await db.update(boards).set(updates).where(eq(boards.id, boardId)).returning();
+      return newBoard;
+    } catch (error) {
+      console.error("Error updating board:", error);
+      throw new Error("Failed to update board");
     }
   },
 };

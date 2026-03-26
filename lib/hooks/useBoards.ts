@@ -8,6 +8,7 @@ import {
 } from "@/server/action-schedule/board";
 import { useEffect, useEffectEvent, useState } from "react";
 import { authClient } from "@/lib/auth-client";
+import { boardService } from "@/server/action-schedule/schedule";
 
 export function useBoards() {
   const [boards, setBoards] = useState<Board[]>([]);
@@ -78,22 +79,19 @@ export function useBoard(boardId: string) {
     }
   });
 
-    const updateBoard = useEffectEvent(async () => {
-    if (!boardId) return;
+  const updateBoard = async (boardId: string, updates: Partial<Board>) => {
     try {
-      setLoading(true);
-      setError(null);
-      const data = await getBoardWithColumnsAction(boardId);
-      setBoard(data.board);
-      setColumns(data.columns);
+      const updatedBoard = await boardService.updateBoard(boardId, updates);
+      setBoard(updatedBoard);
+      return updatedBoard;
     } catch (error) {
       setError(
-        error instanceof Error ? error.message : "Failed to load boards",
+        error instanceof Error ? error.message : "Failed to update board",
       );
     } finally {
       setLoading(false);
     }
-  });
+  };
 
   useEffect(() => {
     if (boardId) {
@@ -101,5 +99,5 @@ export function useBoard(boardId: string) {
     }
   }, [boardId]);
 
-  return { board, columns, loading, error };
+  return { board, columns, loading, error, updateBoard };
 }

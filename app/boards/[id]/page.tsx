@@ -30,7 +30,7 @@ import { useState } from "react";
 
 export default function BoardPage() {
   const { id } = useParams<{ id: string }>();
-  const { board } = useBoard(id);
+  const { board, updateBoard } = useBoard(id);
 
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [newTitle, setNewTitle] = useState("");
@@ -46,10 +46,10 @@ export default function BoardPage() {
     e.preventDefault();
     if (!newTitle.trim() || !board) return;
     try {
-      // await updateBoard(board.id, {
-      //   title: newTitle.trim(),
-      //   color: newColor || board.color, 
-      // });
+      await updateBoard(board.id, {
+        title: newTitle.trim(),
+        color: newColor || board.color, 
+      });
       setIsEditingTitle(false);
     } catch (error) {}
   }

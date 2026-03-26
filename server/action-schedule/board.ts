@@ -1,5 +1,3 @@
-'use server';
-
 import {
   boardDataService,
   boardService,
