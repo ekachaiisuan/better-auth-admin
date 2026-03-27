@@ -1,5 +1,6 @@
 "use client";
 import { AppSidebar } from "@/components/app-sidebar";
+import { Badge } from "@/components/ui/badge";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -23,7 +24,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { useBoard } from "@/lib/hooks/useBoards";
-import { MoreHorizontal } from "lucide-react";
+import { Filter, MoreHorizontal } from "lucide-react";
 import { useParams } from "next/navigation";
 
 import { useState } from "react";
@@ -35,11 +36,14 @@ export default function BoardPage() {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newColor, setNewColor] = useState("");
+  const [filterCount, setFilterCount] = useState(0);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   function onEditBoard() {
     setNewTitle(board?.title || "");
     setNewColor(board?.color || "");
     setIsEditingTitle(true);
+    setFilterCount(2);
   }
 
   async function handleUpdateBoard(e: React.FormEvent<HTMLFormElement>) {
@@ -48,7 +52,7 @@ export default function BoardPage() {
     try {
       await updateBoard(board.id, {
         title: newTitle.trim(),
-        color: newColor || board.color, 
+        color: newColor || board.color,
       });
       setIsEditingTitle(false);
     } catch (error) {}
@@ -87,6 +91,26 @@ export default function BoardPage() {
                       <MoreHorizontal />
                     </Button>
                   </BreadcrumbPage>
+
+                  <Button
+                    value="outline"
+                    size="sm"
+                    className={`text-xs sm:text-sm ${
+                      filterCount > 0 ? "bg-blue-100 border-blue-200" : ""
+                    }`}
+                    onClick={() => setIsFilterOpen(true)}
+                  >
+                    <Filter className="h-3 w-3 sm:h-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">Filter</span>
+                    {filterCount > 0 && (
+                      <Badge
+                        variant="secondary"
+                        className="text-xs ml-1 sm:ml-2"
+                      >
+                        {filterCount}
+                      </Badge>
+                    )}
+                  </Button>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
@@ -151,6 +175,17 @@ export default function BoardPage() {
             </form>
           </DialogContent>
         </Dialog>
+        <Dialog open={isFilterOpen} onOpenChange={setIsFilterOpen}>
+          <DialogContent className="w-[95vw] max-w-106.25 mx-auto">
+            <DialogHeader>
+              <DialogTitle>Filter Tasks</DialogTitle>
+              <p>Filter tasks by priority,assignee, or due date</p>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
+        <div className="min-h-screen bg-gray-100">
+          <main className="container mx-auto py-6 px-4 sm:py-8 space-y-4"></main>
+        </div>
       </SidebarInset>
     </SidebarProvider>
   );
