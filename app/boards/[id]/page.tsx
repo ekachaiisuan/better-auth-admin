@@ -181,6 +181,7 @@ export default function BoardPage() {
               <DialogTitle>Filter Tasks</DialogTitle>
               <p>Filter tasks by priority,assignee, or due date</p>
             </DialogHeader>
+            
           </DialogContent>
         </Dialog>
         <div className="min-h-screen bg-gray-100">
