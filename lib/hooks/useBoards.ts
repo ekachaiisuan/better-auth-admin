@@ -5,10 +5,10 @@ import {
   createBoardAction,
   getBoardWithColumnsAction,
   getBoardsAction,
+  updateBoardAction,
 } from "@/server/action-schedule/board";
 import { useEffect, useEffectEvent, useState } from "react";
 import { authClient } from "@/lib/auth-client";
-import { boardService } from "@/server/action-schedule/schedule";
 
 export function useBoards() {
   const [boards, setBoards] = useState<Board[]>([]);
@@ -81,7 +81,11 @@ export function useBoard(boardId: string) {
 
   const updateBoard = async (boardId: string, updates: Partial<Board>) => {
     try {
-      const updatedBoard = await boardService.updateBoard(boardId, updates);
+      const updatedBoard = await updateBoardAction(boardId, {
+        title: updates.title,
+        description: updates.description,
+        color: updates.color,
+      });
       setBoard(updatedBoard);
       return updatedBoard;
     } catch (error) {

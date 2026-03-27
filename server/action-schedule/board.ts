@@ -1,3 +1,5 @@
+"use server";
+
 import {
   boardDataService,
   boardService,
@@ -31,4 +33,22 @@ export async function createBoardAction(data: {
     ...data,
     userId,
   });
+}
+
+export async function updateBoardAction(
+  boardId: string,
+  updates: {
+    title?: string;
+    description?: string | null;
+    color?: string | null;
+  },
+) {
+  const userId = await getCurrentUserId();
+  const board = await boardService.getBoard(boardId);
+
+  if (!board || board.userId !== userId) {
+    throw new Error("Board not found");
+  }
+
+  return await boardService.updateBoard(boardId, updates);
 }
