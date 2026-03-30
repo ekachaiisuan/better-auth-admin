@@ -15,23 +15,54 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { SelectContent, SelectItem,Select, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { Textarea } from "@/components/ui/textarea";
 import { useBoard } from "@/lib/hooks/useBoards";
-import { Filter, MoreHorizontal } from "lucide-react";
+import { Filter, MoreHorizontal, Plus } from "lucide-react";
 import { useParams } from "next/navigation";
-
 import { useState } from "react";
+import { type ColumnWithTasks } from "@/db/schema";
+
+function Column({column,children,onCreateTask,onEditColumn}:{
+  column:ColumnWithTasks;
+  children:React.ReactNode;
+  onCreateTask: (taskData:any)=>Promise<void>;
+  onEditColumn: (column:ColumnWithTasks)=>void;
+}) {
+  return (
+    <div>
+      <div>
+        {/* Column header */}
+        <div>
+          <div>
+            <div>
+              <h3 className="text-sm font-semibold">{column.title}</h3>
+              <Badge variant="secondary" className="text-xs shrink-0">{column.tasks.length}</Badge>
+            </div>
+            <Button value="ghost" size="sm" className="shrink-0">
+              <MoreHorizontal />
+            </Button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  )
+}
 
 export default function BoardPage() {
   const { id } = useParams<{ id: string }>();
-  const { board, updateBoard } = useBoard(id);
+  const { board, updateBoard, columns } = useBoard(id);
 
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [newTitle, setNewTitle] = useState("");
@@ -179,13 +210,130 @@ export default function BoardPage() {
           <DialogContent className="w-[95vw] max-w-106.25 mx-auto">
             <DialogHeader>
               <DialogTitle>Filter Tasks</DialogTitle>
-              <p>Filter tasks by priority,assignee, or due date</p>
+              <p className="text-sm text-gray-600">
+                Filter tasks by priority,assignee, or due date
+              </p>
             </DialogHeader>
-            
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label>Priority</label>
+                <div className="flex flex-wrap gap-2">
+                  {["low", "medium", "high"].map((priority, key) => (
+                    <Button key={key} variant={"outline"} size="sm">
+                      {priority.charAt(0).toUpperCase() + priority.slice(1)}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+              {/* <div className="space-y-2">
+                <label>Assignee</label>
+                <div className="flex flex-wrap gap-2">
+                  {["low", "medium", "high"].map((priority, key) => (
+                    <Button key={key} variant={"outline"} size="sm">
+                      {priority.charAt(0).toUpperCase() + priority.slice(1)}
+                    </Button>
+                  ))}
+                </div>
+              </div> */}
+              <div className="space-y-2">
+                <label>Due Date</label>
+                <Input type="date"></Input>
+              </div>
+              <div className="flex justify-between pt-4">
+                <Button type="button" variant="outline">
+                  Clear Filters
+                </Button>
+                <Button type="button" onClick={() => setIsFilterOpen(false)}>
+                  Apply Filters
+                </Button>
+              </div>
+            </div>
           </DialogContent>
         </Dialog>
+        {/* Board Content */}
         <div className="min-h-screen bg-gray-100">
-          <main className="container mx-auto py-6 px-4 sm:py-8 space-y-4"></main>
+          <main className="container mx-auto py-6 px-4 sm:py-8 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 space-y-4 sm:space-y-0">
+              <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+                <div className="text-sm text-gray-600">
+                  <span>Total Tasks:</span>
+                  {columns.reduce((sum, col) => sum + col.tasks.length, 0)}
+                </div>
+              </div>
+              {/* Add task button */}
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button className="w-full sm:w-auto">
+                    <Plus />
+                    Add Task
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="w-[95vw] max-w-106.25 mx-auto">
+                  <DialogHeader>
+                    <DialogTitle>Create New Task</DialogTitle>
+                    <p className="text-sm text-gray-600">
+                      Add a new task to the board
+                    </p>
+                  </DialogHeader>
+                  <form className="space-y-4">
+                    <div className="space-y-2">
+                      <Label>Title</Label>
+                      <Input
+                        id="title"
+                        name="title"
+                        placeholder="Enter task title"
+                      ></Input>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Description</Label>
+                      <Textarea
+                        id="description"
+                        name="description"
+                        placeholder="Enter task description"
+                        rows={3}
+                      ></Textarea>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Assignee</Label>
+                      <Input
+                        id="assignee"
+                        name="assignee"
+                        placeholder="Who should this task be assigned to?"
+                      ></Input>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Priority</Label>
+                      <Select name="priority" defaultValue="medium">
+                        <SelectTrigger>
+                          <SelectValue  />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {["low", "medium", "high"].map((priority, key) => (
+                            <SelectItem key={key} value={priority}>
+                              {priority.charAt(0).toUpperCase() +
+                                priority.slice(1)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Due Date</Label>
+                      <Input type="date" id="dueDate" name="dueDate"></Input>
+                    </div>
+                    <div className="flex justify-end space-x-2 pt-4">
+                      <Button type="submit">Create Task</Button>
+                    </div>
+                  </form>
+                </DialogContent>
+              </Dialog>
+            </div>
+            <div>
+              {/* {columns.map((column,key) => (
+                <Column key={key} column={column}></Column>
+              ))} */}
+            </div>
+          </main>
         </div>
       </SidebarInset>
     </SidebarProvider>

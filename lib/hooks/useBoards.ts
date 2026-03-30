@@ -1,6 +1,6 @@
 "use client";
 
-import { type Board, type Column } from "@/db/schema";
+import { type Board, type Column,type ColumnWithTasks } from "@/db/schema";
 import {
   createBoardAction,
   getBoardWithColumnsAction,
@@ -58,7 +58,7 @@ export function useBoards() {
 
 export function useBoard(boardId: string) {
   const [board, setBoard] = useState<Board | null>(null);
-  const [columns, setColumns] = useState<Column[]>([]);
+  const [columns, setColumns] = useState<ColumnWithTasks[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -69,7 +69,7 @@ export function useBoard(boardId: string) {
       setError(null);
       const data = await getBoardWithColumnsAction(boardId);
       setBoard(data.board);
-      setColumns(data.columns);
+      setColumns(data.columnsWithTasks);
     } catch (error) {
       setError(
         error instanceof Error ? error.message : "Failed to load boards",

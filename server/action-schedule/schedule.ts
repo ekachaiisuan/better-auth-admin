@@ -1,7 +1,14 @@
 import { asc, eq } from "drizzle-orm";
 
 import { db } from "@/db/drizzle";
-import { boards, columns, type Board, type Column } from "@/db/schema";
+import {
+  boards,
+  columns,
+  tasks,
+  type Board,
+  type Column,
+  type Task,
+} from "@/db/schema";
 
 export const boardService = {
   async getBoard(boardId: string): Promise<Board | null> {
@@ -41,12 +48,13 @@ export const boardService = {
     }
   },
 
-    async updateBoard(
-    boardId: string,
-    updates: Partial<Board>,
-  ): Promise<Board> {
+  async updateBoard(boardId: string, updates: Partial<Board>): Promise<Board> {
     try {
-      const [newBoard] = await db.update(boards).set(updates).where(eq(boards.id, boardId)).returning();
+      const [newBoard] = await db
+        .update(boards)
+        .set(updates)
+        .where(eq(boards.id, boardId))
+        .returning();
       return newBoard;
     } catch (error) {
       console.error("Error updating board:", error);
@@ -82,6 +90,26 @@ export const columnService = {
   },
 };
 
+export const taskService = {
+  async getTasksByBoard(boardId: string): Promise<Task[]> {
+    try {
+      const result = await db
+        .select({
+          task: tasks,
+        })
+        .from(tasks)
+        .innerJoin(columns, eq(tasks.columnId, columns.id))
+        .where(eq(columns.boardId, boardId))
+        .orderBy(asc(tasks.sortOrder));
+
+      return result.map((row) => row.task) || [];
+    } catch (error) {
+      console.error("Error fetching columns:", error);
+      throw new Error("Failed to fetch columns");
+    }
+  },
+};
+
 export const boardDataService = {
   async getBoardWithColumns(boardId: string) {
     const [board, columns] = await Promise.all([
@@ -91,7 +119,12 @@ export const boardDataService = {
     if (!board) {
       throw new Error("Board not found");
     }
-    return { board, columns };
+    const tasks = await taskService.getTasksByBoard(boardId);
+    const columnsWithTasks = columns.map((column) => ({
+      ...column,
+      tasks: tasks.filter((task) => task.columnId === column.id),
+    }))
+    return { board, columnsWithTasks };
   },
   async createBoardWithDefaultColumns(boardData: {
     title: string;
