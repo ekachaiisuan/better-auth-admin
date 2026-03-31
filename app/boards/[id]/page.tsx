@@ -19,7 +19,13 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { SelectContent, SelectItem,Select, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  SelectContent,
+  SelectItem,
+  Select,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
@@ -33,36 +39,45 @@ import { useParams } from "next/navigation";
 import { useState } from "react";
 import { type ColumnWithTasks } from "@/db/schema";
 
-function Column({column,children,onCreateTask,onEditColumn}:{
-  column:ColumnWithTasks;
-  children:React.ReactNode;
-  onCreateTask: (taskData:any)=>Promise<void>;
-  onEditColumn: (column:ColumnWithTasks)=>void;
+
+function Column({
+  column,
+  children,
+  onCreateTask,
+  onEditColumn,
+}: {
+  column: ColumnWithTasks;
+  children: React.ReactNode;
+  onCreateTask: (taskData: any) => Promise<void>;
+  onEditColumn: (column: ColumnWithTasks) => void;
 }) {
   return (
-    <div>
-      <div>
+    <div className="w-full lg:shrink-0">
+      <div className="bg-muted rounded-lg shadow-sm border">
         {/* Column header */}
-        <div>
-          <div>
-            <div>
+        <div className="p-3 sm:p-4 border-b">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2 min-w-0">
               <h3 className="text-sm font-semibold">{column.title}</h3>
-              <Badge variant="secondary" className="text-xs shrink-0">{column.tasks.length}</Badge>
+              <Badge variant="secondary" className="text-xs shrink-0">
+                {column.tasks.length}
+              </Badge>
             </div>
             <Button value="ghost" size="sm" className="shrink-0">
               <MoreHorizontal />
             </Button>
           </div>
         </div>
-
+        {/* Column content */}
+        <div className="p-3 sm:p-4">{children}</div>
       </div>
     </div>
-  )
+  );
 }
 
 export default function BoardPage() {
   const { id } = useParams<{ id: string }>();
-  const { board, updateBoard, columns } = useBoard(id);
+  const { board, updateBoard, columns, createRealTask } = useBoard(id);
 
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [newTitle, setNewTitle] = useState("");
@@ -87,6 +102,36 @@ export default function BoardPage() {
       });
       setIsEditingTitle(false);
     } catch (error) {}
+  }
+
+  async function createTask(taskData: {
+    title: string;
+    description?: string;
+    assignee?: string;
+    dueDate?: string;
+    priority: "low" | "medium" | "high";
+  }) {
+    const targetColumn = columns[0];
+    if (!targetColumn) {
+      throw new Error("No columns available to add task to.");
+    }
+    await createRealTask(targetColumn.id, taskData);
+  }
+
+  async function handleCreateTask(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const taskData = {
+      title: formData.get("title") as string,
+      description: (formData.get("description") as string) || undefined,
+      assignee: (formData.get("assignee") as string) || undefined,
+      dueDate: (formData.get("dueDate") as string) || undefined,
+      priority:
+        (formData.get("priority") as "low" | "medium" | "high") || "medium",
+    };
+    if (taskData.title.trim()) {
+      await createTask(taskData);
+    }
   }
 
   return (
@@ -275,7 +320,7 @@ export default function BoardPage() {
                       Add a new task to the board
                     </p>
                   </DialogHeader>
-                  <form className="space-y-4">
+                  <form className="space-y-4" onSubmit={handleCreateTask}>
                     <div className="space-y-2">
                       <Label>Title</Label>
                       <Input
@@ -305,7 +350,7 @@ export default function BoardPage() {
                       <Label>Priority</Label>
                       <Select name="priority" defaultValue="medium">
                         <SelectTrigger>
-                          <SelectValue  />
+                          <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
                           {["low", "medium", "high"].map((priority, key) => (
@@ -329,9 +374,20 @@ export default function BoardPage() {
               </Dialog>
             </div>
             <div>
-              {/* {columns.map((column,key) => (
-                <Column key={key} column={column}></Column>
-              ))} */}
+              {columns.map((column, key) => (
+                <Column
+                  key={key}
+                  column={column}
+                  onCreateTask={() => {}}
+                  onEditColumn={() => {}}
+                >
+                  <div>
+                    {column.tasks.map((task, key) => (
+                      <div>{task.title}</div>
+                    ))}
+                  </div>
+                </Column>
+              ))}
             </div>
           </main>
         </div>

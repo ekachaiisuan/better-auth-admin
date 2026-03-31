@@ -64,6 +64,18 @@ export const boardService = {
 };
 
 export const columnService = {
+  async getColumn(columnId: string): Promise<Column | null> {
+    try {
+      const result = await db.query.columns.findFirst({
+        where: (columns, { eq }) => eq(columns.id, columnId),
+      });
+
+      return result ?? null;
+    } catch (error) {
+      console.error("Error fetching column:", error);
+      throw new Error("Failed to fetch column");
+    }
+  },
   async getColumns(boardId: string): Promise<Column[]> {
     try {
       const result = await db
@@ -108,9 +120,29 @@ export const taskService = {
       throw new Error("Failed to fetch columns");
     }
   },
+    async createTask(
+    task: Omit<Task, "id" | "createdAt" | "updatedAt">,
+  ): Promise<Task> {
+    try {
+      const [newTask] = await db.insert(tasks).values(task).returning();
+      return newTask;
+    } catch (error) {
+      console.error("Error creating column:", error);
+      throw new Error("Failed to create column");
+    }
+  },
 };
 
 export const boardDataService = {
+  async getBoardWithColumnsByColumnId(columnId: string) {
+    const column = await columnService.getColumn(columnId);
+
+    if (!column) {
+      return null;
+    }
+
+    return boardService.getBoard(column.boardId);
+  },
   async getBoardWithColumns(boardId: string) {
     const [board, columns] = await Promise.all([
       boardService.getBoard(boardId),

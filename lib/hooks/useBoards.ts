@@ -1,8 +1,9 @@
 "use client";
 
-import { type Board, type Column,type ColumnWithTasks } from "@/db/schema";
+import { type Board, type Column, type ColumnWithTasks } from "@/db/schema";
 import {
   createBoardAction,
+  createTaskAction,
   getBoardWithColumnsAction,
   getBoardsAction,
   updateBoardAction,
@@ -103,5 +104,44 @@ export function useBoard(boardId: string) {
     }
   }, [boardId]);
 
-  return { board, columns, loading, error, updateBoard };
+  async function createRealTask(
+    columnId: string,
+    taskData: {
+      title: string;
+      description?: string;
+      assignee?: string;
+      dueDate?: string;
+      priority?: "low" | "medium" | "high";
+    },
+  ) {
+    try {
+      const newTask = await createTaskAction({
+        title: taskData.title,
+        description: taskData.description || null,
+        assignee: taskData.assignee || null,
+        dueDate: taskData.dueDate || null,
+        priority: taskData.priority || "medium",
+        columnId: columnId,
+        sortOrder:
+          columns.find((col) => col.id === columnId)?.tasks.length || 0,
+      });
+      setColumns((prev) =>
+        prev.map((col) =>
+          col.id === columnId
+            ? {
+                ...col,
+                tasks: [...col.tasks, newTask],
+              }
+            : col,
+        ),
+      );
+      return newTask;
+    } catch (error) {
+      setError(
+        error instanceof Error ? error.message : "Failed to create task",
+      );
+    }
+  }
+
+  return { board, columns, loading, error, updateBoard, createRealTask };
 }

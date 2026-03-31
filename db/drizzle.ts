@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { drizzle } from "drizzle-orm/neon-http";
 import { neon } from "@neondatabase/serverless";
 import * as schema from "@/db/schema";
@@ -5,7 +6,9 @@ import * as schema from "@/db/schema";
 const databaseUrl = process.env.DATABASE_URL;
 
 if (!databaseUrl) {
-  throw new Error("DATABASE_URL is not configured");
+  throw new Error(
+    "DATABASE_URL is not configured. Add it to .env or the server environment before importing db/drizzle.ts",
+  );
 }
 
 const sql = neon(databaseUrl);
