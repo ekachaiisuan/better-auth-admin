@@ -7,7 +7,7 @@ export default function Page() {
   return (
     <>
       <DashboardBreadcrumb>
-        <BreadcrumbLink href="#">Trello</BreadcrumbLink>
+        <BreadcrumbLink href="">Trello</BreadcrumbLink>
         <BreadcrumbPage>Dashboard</BreadcrumbPage>
       </DashboardBreadcrumb>
       <CreateDashboard />
