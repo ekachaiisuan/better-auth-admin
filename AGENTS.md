@@ -60,7 +60,11 @@
 **General Architecture Principles**:
  - ใช้ Next.js 16 (App Router) เท่านั้น
  - Default เป็น Server Component
- - ใช้ "use client" เฉพาะเมื่อจำเป็นจริง ๆ (เช่น interactive UI, event handler)
+ - Server Component มีหน้าที่ตรวจสอบ auth และ permission
+ - hooks ฝั่ง client ห้ามติดต่อ database โดยตรงต้องผ่าน server action
+ - hooks ที่ให้ client-side logic แยกเก็บไว้ใน lib/hooks/
+ - แนวคิดการใช้งาน hooks client ตามตัวอย่างนี้ useBoards.ts->board.ts->schedule.ts
+ - helper/service เก็บไว้ใน server/action-*/ 
  - ห้าม query database จาก Client Component
  - Business logic และ access control ต้องอยู่ฝั่ง server เท่านั้น
  - หลีกเลี่ยงการเขียน logic ซ้ำ โดยแยก reusable logic ไว้ใน lib/ หรือ server/

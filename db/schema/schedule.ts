@@ -92,6 +92,10 @@ export const tasks = pgTable(
   (table) => [index('tasks_column_id_idx').on(table.columnId)],
 );
 
+export type ColumnWithTasks = typeof columns.$inferSelect & {
+  tasks: typeof tasks.$inferSelect[];
+};
+
 export type Board = typeof boards.$inferSelect;
 export type Column = typeof columns.$inferSelect;
 export type Task = typeof tasks.$inferSelect;

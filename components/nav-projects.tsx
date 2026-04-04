@@ -6,15 +6,15 @@ import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,
-  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
 } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
 
+
+
 export function NavProjects({
-  projects,
+  projects
 }: {
   projects: {
     name: string;
@@ -22,7 +22,6 @@ export function NavProjects({
     icon: LucideIcon;
   }[];
 }) {
-  const { isMobile } = useSidebar();
   const pathname = usePathname();
 
   return (
@@ -30,8 +29,12 @@ export function NavProjects({
       <SidebarGroupLabel>Main</SidebarGroupLabel>
       <SidebarMenu>
         {projects.map((item) => {
+          const isBoardDetail =
+            item.url === "/dashboard" && pathname.startsWith("/boards/");
           const isActive =
-            pathname === item.url || pathname.startsWith(`${item.url}/`);
+            pathname === item.url ||
+            pathname.startsWith(`${item.url}/`) ||
+            isBoardDetail;
           return (
             <SidebarMenuItem key={item.name}>
               <SidebarMenuButton asChild>
