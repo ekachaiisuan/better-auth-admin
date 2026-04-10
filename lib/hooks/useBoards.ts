@@ -1,11 +1,13 @@
 "use client";
 
-import { type Board, type Column, type ColumnWithTasks } from "@/db/schema";
+import { type Board, type ColumnWithTasks } from "@/db/schema";
 import {
   createBoardAction,
   createTaskAction,
   getBoardWithColumnsAction,
   getBoardsAction,
+  moveTaskAction,
+  reorderColumnTasksAction,
   updateBoardAction,
 } from "@/server/action-schedule/board";
 import { useEffect, useEffectEvent, useState } from "react";
@@ -63,7 +65,7 @@ export function useBoard(boardId: string) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const loadBoard = useEffectEvent(async () => {
+  async function loadBoard() {
     if (!boardId) return;
     try {
       setLoading(true);
@@ -78,7 +80,7 @@ export function useBoard(boardId: string) {
     } finally {
       setLoading(false);
     }
-  });
+  }
 
   const updateBoard = async (boardId: string, updates: Partial<Board>) => {
     try {
@@ -99,9 +101,23 @@ export function useBoard(boardId: string) {
   };
 
   useEffect(() => {
-    if (boardId) {
-      loadBoard();
-    }
+    if (!boardId) return;
+
+    void (async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await getBoardWithColumnsAction(boardId);
+        setBoard(data.board);
+        setColumns(data.columnsWithTasks);
+      } catch (error) {
+        setError(
+          error instanceof Error ? error.message : "Failed to load boards",
+        );
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, [boardId]);
 
   async function createRealTask(
@@ -142,6 +158,80 @@ export function useBoard(boardId: string) {
       );
     }
   }
+  async function moveTask(
+    taskId: string,
+    newColumnId: string,
+    newSortOrder: number,
+    updateLocal = true,
+  ) {
+    try {
+      await moveTaskAction(taskId, newColumnId, newSortOrder);
+      if (updateLocal) {
+        setColumns((prev) => {
+          const newColumns = [...prev];
+          let taskToMove: ColumnWithTasks["tasks"][number] | null = null;
 
-  return { board, columns, loading, error, updateBoard, createRealTask,setColumns };
+          for (const col of newColumns) {
+            const taskIndex = col.tasks.findIndex((task) => task.id === taskId);
+            if (taskIndex !== -1) {
+              taskToMove = col.tasks[taskIndex];
+              col.tasks.splice(taskIndex, 1);
+              break;
+            }
+          }
+          if (taskToMove) {
+            //Add task to new column
+            const targetColumn = newColumns.find((col) => col.id === newColumnId);
+            if (targetColumn) {
+              targetColumn.tasks.splice(newSortOrder, 0, taskToMove);
+            }
+          }
+          return newColumns;
+        });
+      }
+    } catch (error) {
+      setError(
+        error instanceof Error ? error.message : "Failed to move task",
+      );
+      await loadBoard();
+    }
+  }
+
+  async function reorderColumn(columnId: string, taskIds: string[]) {
+    try {
+      await reorderColumnTasksAction(columnId, taskIds);
+      setColumns((prev) =>
+        prev.map((column) =>
+          column.id === columnId
+            ? {
+                ...column,
+                tasks: column.tasks
+                  .map((task) => ({
+                    ...task,
+                    sortOrder: taskIds.indexOf(task.id),
+                  }))
+                  .sort((a, b) => a.sortOrder - b.sortOrder),
+              }
+            : column,
+        ),
+      );
+    } catch (error) {
+      setError(
+        error instanceof Error ? error.message : "Failed to reorder tasks",
+      );
+      await loadBoard();
+    }
+  }
+
+  return {
+    board,
+    columns,
+    loading,
+    error,
+    updateBoard,
+    createRealTask,
+    setColumns,
+    moveTask,
+    reorderColumn,
+  };
 }

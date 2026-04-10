@@ -43,7 +43,7 @@ import {
   DndContext,
   DragStartEvent,
   rectIntersection,
-  useDraggable,
+  useDroppable,
   DragOverEvent,
   DragEndEvent,
   DragOverlay,
@@ -51,11 +51,12 @@ import {
 } from "@dnd-kit/core";
 import {
   SortableContext,
+  arrayMove,
   useSortable,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { ta } from "zod/v4/locales";
+
 
 
 type TaskFormData = {
@@ -168,18 +169,16 @@ function DroppableColumn({
   column,
   children,
   onCreateTask,
-  onEditColumn,
 }: {
   column: ColumnWithTasks;
   children: React.ReactNode;
   onCreateTask: (taskData: TaskFormData) => Promise<void>;
-  onEditColumn?: (column: ColumnWithTasks) => void;
 }) {
-  const { setNodeRef, over } = useDraggable({ id: column.id });
+  const { setNodeRef, isOver } = useDroppable({ id: column.id });
   return (
     <div
       ref={setNodeRef}
-      className={`w-full lg:shrink-0 lg:w-80 ${over ? "bg-blue-50 rounded-lg" : ""}`}
+      className={`w-full lg:shrink-0 lg:w-80 ${isOver ? "bg-blue-50 rounded-lg" : ""}`}
     >
       <div className="bg-muted rounded-lg shadow-sm border">
         {/* Column header */}
@@ -281,19 +280,6 @@ function SortableTask({ task }: { task: Task }) {
 }
 
 function TaskOverlay({ task }: { task: Task }) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: task.id });
-  const styles = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-  };
   function getPriorityColor(
     priority: "low" | "medium" | "high" | null,
   ): string {
@@ -353,7 +339,7 @@ function TaskOverlay({ task }: { task: Task }) {
 
 export default function BoardPage() {
   const { id } = useParams<{ id: string }>();
-  const { board, updateBoard, columns, createRealTask,setColumns } = useBoard(id);
+  const { board, updateBoard, columns, createRealTask, setColumns, moveTask, reorderColumn } = useBoard(id);
 
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [newTitle, setNewTitle] = useState("");
@@ -439,24 +425,100 @@ export default function BoardPage() {
     }
   }
 
-  function handleDragEnd(event: DragEndEvent) {
-    // console.log('Drag ended');
+  function findTaskLocation(taskId: string) {
+    for (const column of columns) {
+      const taskIndex = column.tasks.findIndex((task) => task.id === taskId);
+      if (taskIndex !== -1) {
+        return {
+          column,
+          taskIndex,
+        };
+      }
+    }
+
+    return null;
+  }
+
+  async function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
+    setActiveTask(null);
+
     if (!over) return;
+
     const taskId = active.id as string;
     const overId = over.id as string;
+    const sourceLocation = findTaskLocation(taskId);
 
-    const targetColumn = columns.find((col) => col.id === overId);
-    if (targetColumn) {
-      const sourceColumn = columns.find((col) =>
-        col.tasks.some((task) => task.id === taskId),
+    if (!sourceLocation) return;
+
+    const overTaskLocation = findTaskLocation(overId);
+    const targetColumn = overTaskLocation?.column ?? columns.find((col) => col.id === overId);
+
+    if (!targetColumn) return;
+
+    const sourceColumn = sourceLocation.column;
+    const sourceIndex = sourceLocation.taskIndex;
+    const targetIndex = overTaskLocation
+      ? overTaskLocation.taskIndex
+      : targetColumn.tasks.length - (sourceColumn.id === targetColumn.id ? 1 : 0);
+
+    if (sourceColumn.id === targetColumn.id) {
+      if (sourceIndex === targetIndex) return;
+
+      const reorderedTaskIds = arrayMove(
+        sourceColumn.tasks.map((task) => task.id),
+        sourceIndex,
+        targetIndex,
       );
-      if (sourceColumn && sourceColumn.id !== targetColumn.id) {
-        // await moveTask(taskId, targetColumn.id,targetColumn.tasks.length);
-      }
-    }else{
 
+      setColumns((prev: ColumnWithTasks[]) =>
+        prev.map((column) =>
+          column.id === sourceColumn.id
+            ? {
+                ...column,
+                tasks: arrayMove(column.tasks, sourceIndex, targetIndex),
+              }
+            : column,
+        ),
+      );
+
+      await reorderColumn(sourceColumn.id, reorderedTaskIds);
+      return;
     }
+
+    const taskToMove = sourceColumn.tasks[sourceIndex];
+    const updatedSourceTasks = sourceColumn.tasks.filter((task) => task.id !== taskId);
+    const updatedTargetTasks = [...targetColumn.tasks];
+
+    updatedTargetTasks.splice(targetIndex, 0, {
+      ...taskToMove,
+      columnId: targetColumn.id,
+      sortOrder: targetIndex,
+    });
+
+    setColumns((prev: ColumnWithTasks[]) =>
+      prev.map((column) => {
+        if (column.id === sourceColumn.id) {
+          return {
+            ...column,
+            tasks: updatedSourceTasks,
+          };
+        }
+
+        if (column.id === targetColumn.id) {
+          return {
+            ...column,
+            tasks: updatedTargetTasks,
+          };
+        }
+
+        return column;
+      }),
+    );
+
+    await moveTask(taskId, targetColumn.id, targetIndex, false);
+    await reorderColumn(sourceColumn.id, updatedSourceTasks.map((task) => task.id));
+    await reorderColumn(targetColumn.id, updatedTargetTasks.map((task) => task.id));
   }
 
   return (

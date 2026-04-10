@@ -80,3 +80,25 @@ export async function createTaskAction(data: {
     sortOrder: data.sortOrder,
   });
 }
+
+export async function moveTaskAction(taskId: string, newColumnId: string, newSortOrder: number) {
+  const userId = await getCurrentUserId();
+  const board = await boardDataService.getBoardWithColumnsByColumnId(newColumnId);
+
+  if (!board || board.userId !== userId) {
+    throw new Error("Board not found");
+  }
+
+  return await taskService.moveTask(taskId, newColumnId, newSortOrder);
+}
+
+export async function reorderColumnTasksAction(columnId: string, taskIds: string[]) {
+  const userId = await getCurrentUserId();
+  const board = await boardDataService.getBoardWithColumnsByColumnId(columnId);
+
+  if (!board || board.userId !== userId) {
+    throw new Error("Board not found");
+  }
+
+  return await taskService.reorderColumnTasks(columnId, taskIds);
+}

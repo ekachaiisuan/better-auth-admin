@@ -1,4 +1,4 @@
-import { asc, eq } from "drizzle-orm";
+import { and, asc, eq } from "drizzle-orm";
 
 import { db } from "@/db/drizzle";
 import {
@@ -120,7 +120,7 @@ export const taskService = {
       throw new Error("Failed to fetch columns");
     }
   },
-    async createTask(
+  async createTask(
     task: Omit<Task, "id" | "createdAt" | "updatedAt">,
   ): Promise<Task> {
     try {
@@ -129,6 +129,25 @@ export const taskService = {
     } catch (error) {
       console.error("Error creating column:", error);
       throw new Error("Failed to create column");
+    }
+  },
+  async moveTask(taskId: string, newColumnId: string, newSortOrder: number) {
+    const [newTask] = await db
+      .update(tasks)
+      .set({
+        columnId: newColumnId,
+        sortOrder: newSortOrder,
+      })
+      .where(eq(tasks.id, taskId))
+      .returning();
+    return newTask;
+  },
+  async reorderColumnTasks(columnId: string, taskIds: string[]) {
+    for (const [sortOrder, taskId] of taskIds.entries()) {
+      await db
+        .update(tasks)
+        .set({ sortOrder })
+        .where(and(eq(tasks.id, taskId), eq(tasks.columnId, columnId)));
     }
   },
 };
@@ -155,7 +174,7 @@ export const boardDataService = {
     const columnsWithTasks = columns.map((column) => ({
       ...column,
       tasks: tasks.filter((task) => task.columnId === column.id),
-    }))
+    }));
     return { board, columnsWithTasks };
   },
   async createBoardWithDefaultColumns(boardData: {
