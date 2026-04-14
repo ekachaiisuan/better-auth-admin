@@ -69,6 +69,21 @@
  - Business logic และ access control ต้องอยู่ฝั่ง server เท่านั้น
  - หลีกเลี่ยงการเขียน logic ซ้ำ โดยแยก reusable logic ไว้ใน lib/ หรือ server/
  - ถ้าเป็น client-side data fetching hook ให้สร้างใน lib/hooks/
+ - Better Auth เป็น main สำหรับการทำ authen (login, session, social login, email/password)
+ - Drizzle = auth tables และ permission tables
+ - Convex = app data + realtime
+
+# Project Slack Clone
+- ทำงานอยู่ใน app/workspaces
+- ใช้ better-auth เป็น auth provider สำหรับ issue jwt
+- ใช้ convex เป็น database สำหรับ app data
+- convex.users.authId = better-auth user.id
+- ให้ Convex เชื่อถือเฉพาะ jwt ที่ issue มาจาก better-auth
+
+# Project Trello Clone
+- ทำงานอยู่ใน app/dashboard
+- better-auth เป็น auth provider/RBAC
+- drizzle เป็น database
 
 # Authentication (Better Auth)
 - ใช้ Better Auth เป็นแหล่งข้อมูล session เพียงแหล่งเดียว
