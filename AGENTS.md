@@ -68,6 +68,7 @@
  - ห้าม query database จาก Client Component
  - Business logic และ access control ต้องอยู่ฝั่ง server เท่านั้น
  - หลีกเลี่ยงการเขียน logic ซ้ำ โดยแยก reusable logic ไว้ใน lib/ หรือ server/
+ - ถ้าเป็น client-side data fetching hook ให้สร้างใน lib/hooks/
 
 # Authentication (Better Auth)
 - ใช้ Better Auth เป็นแหล่งข้อมูล session เพียงแหล่งเดียว

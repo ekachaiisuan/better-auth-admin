@@ -14,19 +14,21 @@ import { usePathname } from "next/navigation";
 
 
 export function NavProjects({
-  projects
+  projects,
+  title = "Projects",
 }: {
   projects: {
     name: string;
     url: string;
     icon: LucideIcon;
   }[];
+  title?: string;
 }) {
   const pathname = usePathname();
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel>Main</SidebarGroupLabel>
+      <SidebarGroupLabel>{title}</SidebarGroupLabel>
       <SidebarMenu>
         {projects.map((item) => {
           const isBoardDetail =

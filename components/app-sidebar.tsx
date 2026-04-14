@@ -46,6 +46,13 @@ const data = {
       icon: LayoutDashboard,
     },
   ],
+  projects1:[
+    {
+      name: "Dashboard",
+      url: "/workspaces",
+      icon: LayoutDashboard,
+    },
+  ]
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -84,7 +91,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         {hasAdminPermission && <NavMain items={data.navMain} />}
-        <NavProjects projects={data.projects} />
+        <NavProjects projects={data.projects} title="Trello" />
+        <NavProjects projects={data.projects1} title="Workspaces" />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} />
