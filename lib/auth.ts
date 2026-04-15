@@ -1,22 +1,22 @@
-import { betterAuth } from 'better-auth';
-import { drizzleAdapter } from 'better-auth/adapters/drizzle';
-import { db } from '@/db/drizzle';
-import { nextCookies } from 'better-auth/next-js';
-import { Resend } from 'resend';
-import VerifyEmail from '@/components/email/verify-email';
-import ResetPasswordEmail from '@/components/email/reset-password';
-import { createAuthMiddleware } from 'better-auth/api';
-import WelcomeEmail from '@/components/email/welcome-email';
-import { twoFactor, admin as adminPlugin } from 'better-auth/plugins';
-import { ac, admin, user, officer, manager } from '@/lib/permissions';
-import * as authSchema from '@/db/schema/auth';
-import { jwt } from 'better-auth/plugins';
+import { betterAuth } from "better-auth";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { db } from "@/db/drizzle";
+import { nextCookies } from "better-auth/next-js";
+import { Resend } from "resend";
+import VerifyEmail from "@/components/email/verify-email";
+import ResetPasswordEmail from "@/components/email/reset-password";
+import { createAuthMiddleware } from "better-auth/api";
+import WelcomeEmail from "@/components/email/welcome-email";
+import { twoFactor, admin as adminPlugin } from "better-auth/plugins";
+import { ac, admin, user, officer, manager } from "@/lib/permissions";
+import * as authSchema from "@/db/schema/auth";
+import { jwt } from "better-auth/plugins";
 
 const resend = new Resend(process.env.RESEND_API_KEY!);
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
-    provider: 'pg',
+    provider: "pg",
     schema: authSchema,
   }),
   emailAndPassword: {
@@ -24,9 +24,9 @@ export const auth = betterAuth({
     requireEmailVerification: true,
     sendResetPassword: async ({ user, url }, request) => {
       await resend.emails.send({
-        from: 'onboarding@resend.dev',
+        from: `admin <${process.env.EMAIL_FROM!}>`,
         to: user.email,
-        subject: 'Reset your password',
+        subject: "Reset your password",
         react: ResetPasswordEmail({
           userEmail: user.email,
           url,
@@ -37,9 +37,9 @@ export const auth = betterAuth({
   emailVerification: {
     sendVerificationEmail: async ({ user, url }, request) => {
       await resend.emails.send({
-        from: 'onboarding@resend.dev',
+        from: `admin <${process.env.EMAIL_FROM!}>`,
         to: user.email,
-        subject: 'Verify your email address',
+        subject: "Verify your email address",
         react: VerifyEmail({
           username: user.name,
           verifyUrl: url,
@@ -63,16 +63,16 @@ export const auth = betterAuth({
   },
   hooks: {
     after: createAuthMiddleware(async (ctx) => {
-      if (ctx.path.startsWith('/signup')) {
+      if (ctx.path.startsWith("/signup")) {
         const user = ctx.context.newSession?.user ?? {
           name: ctx.body.name,
           email: ctx.body.email,
         };
         if (user !== null) {
           await resend.emails.send({
-            from: 'onboarding@resend.dev',
+            from: `admin <${process.env.EMAIL_FROM!}>`,
             to: user.email,
-            subject: 'Welcome to our platform',
+            subject: "Welcome to our platform",
             react: WelcomeEmail({
               firstName: user.name,
             }),
@@ -85,7 +85,7 @@ export const auth = betterAuth({
     nextCookies(),
     twoFactor(),
     adminPlugin({
-      defaultRole: 'user',
+      defaultRole: "user",
       ac,
       roles: {
         user,
@@ -97,14 +97,14 @@ export const auth = betterAuth({
     jwt({
       jwt: {
         issuer: process.env.BETTER_AUTH_URL,
-        audience: 'convex',
+        audience: "convex",
         getSubject: (session) => session.user.id,
       },
       jwks: {
         keyPairConfig: {
-          alg: 'RS256',
+          alg: "RS256",
         },
-        jwksPath: '/.well-known/jwks.json',
+        jwksPath: "/.well-known/jwks.json",
       },
     }),
   ],

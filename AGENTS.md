@@ -72,6 +72,7 @@
  - Better Auth เป็น main สำหรับการทำ authen (login, session, social login, email/password)
  - Drizzle = auth tables และ permission tables
  - Convex = app data + realtime
+ - Better Auth เปิด Route ผ่าน /api/auth/*
 
 # Project Slack Clone
 - ทำงานอยู่ใน app/workspaces

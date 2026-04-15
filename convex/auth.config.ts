@@ -6,7 +6,7 @@ export default {
     {
       type: "customJwt",
       issuer: process.env.BETTER_AUTH_URL!,
-      jwks: `${process.env.BETTER_AUTH_URL}/.well-known/jwks.json`,
+      jwks: `${process.env.BETTER_AUTH_URL}/api/auth/.well-known/jwks.json`,
       applicationID: "convex",
       algorithm: "RS256",
     },
